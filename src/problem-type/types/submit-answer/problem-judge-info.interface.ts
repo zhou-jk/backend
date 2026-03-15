@@ -3,6 +3,11 @@ import { Checker } from "@/problem-type/common/checker";
 
 export interface ProblemJudgeInfoSubmitAnswer extends ProblemJudgeInfo {
   /*
+   * Total score of the problem (default: 100)
+   */
+  totalScore?: number;
+
+  /*
    * There could be multiple subtasks in a problem
    * Each subtask contains some testcases
    * null for detecting from testdata files automatically

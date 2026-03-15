@@ -99,6 +99,7 @@ resourceLimit:
   problemTimeLimit: 2000
   problemMemoryLimit: 512
   submissionFileSize: 10485760
+  maxTotalScore: 1000000
 queryLimit:
   problemSet: 100
   submissions: 10

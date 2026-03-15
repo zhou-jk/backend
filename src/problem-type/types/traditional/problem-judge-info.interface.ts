@@ -11,6 +11,11 @@ export interface ProblemJudgeInfoTraditional extends ProblemJudgeInfo {
   memoryLimit: number;
 
   /*
+   * Total score of the problem (default: 100)
+   */
+  totalScore?: number;
+
+  /*
    * Be null if not using file IO
    */
   fileIo?: {

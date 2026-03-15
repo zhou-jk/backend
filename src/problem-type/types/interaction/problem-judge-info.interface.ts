@@ -10,6 +10,11 @@ export interface ProblemJudgeInfoInteraction extends ProblemJudgeInfo {
   memoryLimit: number;
 
   /*
+   * Total score of the problem (default: 100)
+   */
+  totalScore?: number;
+
+  /*
    * If ture, samples in statement will be run before all subtasks
    * If a submission failed on samples, all subtasks will be skipped
    */

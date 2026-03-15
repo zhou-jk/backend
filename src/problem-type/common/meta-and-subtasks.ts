@@ -10,6 +10,7 @@ import { restrictProperties } from "./restrict-properties";
 interface JudgeInfoWithMetaAndSubtasks {
   timeLimit?: number;
   memoryLimit?: number;
+  totalScore?: number;
 
   fileIo?: {
     inputFilename: string;
@@ -48,6 +49,8 @@ interface ValidateMetaAndSubtasksOptions {
   enableInputFile: boolean | "optional";
   enableOutputFile: boolean | "optional";
   enableUserOutputFilename: boolean;
+
+  maxTotalScore?: number;
 }
 
 export function validateMetaAndSubtasks(
@@ -86,6 +89,13 @@ export function validateMetaAndSubtasks(
     validateMemoryLimit(judgeInfo.memoryLimit, "TASK");
   }
 
+  if (judgeInfo.totalScore != null) {
+    if (!Number.isSafeInteger(judgeInfo.totalScore) || judgeInfo.totalScore <= 0)
+      throw ["INVALID_TOTAL_SCORE", judgeInfo.totalScore];
+    if (options.maxTotalScore != null && judgeInfo.totalScore > options.maxTotalScore)
+      throw ["TOTAL_SCORE_TOO_LARGE", judgeInfo.totalScore, options.maxTotalScore];
+  }
+
   if (options.enableFileIo && judgeInfo.fileIo) {
     if (typeof judgeInfo.fileIo.inputFilename !== "string" || !isValidFilename(judgeInfo.fileIo.inputFilename))
       throw ["INVALID_FILEIO_FILENAME", judgeInfo.fileIo.inputFilename];
@@ -114,7 +124,7 @@ export function validateMetaAndSubtasks(
       throw ["INVALID_SCORING_TYPE", i + 1, scoringType];
     }
 
-    if (points != null && (typeof points !== "number" || points < 0 || points > 100))
+    if (points != null && (typeof points !== "number" || points < 0))
       throw ["INVALID_POINTS_SUBTASK", i + 1, points];
 
     if (Array.isArray(dependencies)) {
@@ -185,7 +195,7 @@ export function validateMetaAndSubtasks(
         delete testcase.memoryLimit;
       }
 
-      if (points != null && (typeof points !== "number" || points < 0 || points > 100))
+      if (points != null && (typeof points !== "number" || points < 0))
         throw ["INVALID_POINTS_TESTCASE", i + 1, j + 1, points];
 
       restrictProperties(testcase, [
@@ -198,16 +208,7 @@ export function validateMetaAndSubtasks(
       ]);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const sum = testcases.reduce((s, { points }) => (points ? s + points : s), 0);
-    if (sum > 100) {
-      throw ["POINTS_SUM_UP_TO_LARGER_THAN_100_TESTCASES", i + 1, sum];
-    }
   });
-  const sum = (judgeInfo.subtasks || []).reduce((s, { points }) => (points ? s + points : s), 0);
-  if (sum > 100) {
-    throw ["POINTS_SUM_UP_TO_LARGER_THAN_100_SUBTASKS", sum];
-  }
 
   try {
     toposort.array(
@@ -224,4 +225,17 @@ export function validateMetaAndSubtasks(
     judgeInfo.subtasks.reduce((count, subtask) => count + subtask.testcases.length, 0) > options.testcaseLimit
   )
     throw ["TOO_MANY_TESTCASES"];
+
+  // Validate subtask points sum
+  const totalScore = judgeInfo.totalScore || 100;
+  const subtasksWithPoints = judgeInfo.subtasks?.filter(s => s.points != null) || [];
+  if (subtasksWithPoints.length > 0) {
+    const pointsSum = subtasksWithPoints.reduce((sum, s) => sum + (s.points || 0), 0);
+    if (pointsSum > totalScore) {
+      throw ["SUBTASK_POINTS_SUM_TOO_LARGE", pointsSum, totalScore];
+    }
+    if (judgeInfo.subtasks && subtasksWithPoints.length === judgeInfo.subtasks.length && pointsSum !== totalScore) {
+      throw ["SUBTASK_POINTS_SUM_NOT_EQUAL", pointsSum, totalScore];
+    }
+  }
 }

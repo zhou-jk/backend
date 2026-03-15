@@ -69,7 +69,8 @@ export class ProblemTypeSubmitAnswerService
       enableFileIo: false,
       enableInputFile: "optional",
       enableOutputFile: true,
-      enableUserOutputFilename: true
+      enableUserOutputFilename: true,
+      maxTotalScore: this.configService.config.resourceLimit.maxTotalScore
     });
 
     validateChecker(judgeInfo, testData, {
@@ -79,7 +80,7 @@ export class ProblemTypeSubmitAnswerService
       hardMemoryLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemMemoryLimit
     });
 
-    restrictProperties(judgeInfo, ["subtasks", "checker"]);
+    restrictProperties(judgeInfo, ["totalScore", "subtasks", "checker"]);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

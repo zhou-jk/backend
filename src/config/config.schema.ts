@@ -448,6 +448,10 @@ class ResourceLimitConfig {
   @IsInt()
   @Min(0)
   readonly submissionFileSize: number;
+
+  @IsInt()
+  @Min(1)
+  readonly maxTotalScore: number;
 }
 
 class QueryLimitConfig {

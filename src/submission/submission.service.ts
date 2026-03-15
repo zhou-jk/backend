@@ -63,6 +63,7 @@ interface SubmissionTaskExtraInfo extends JudgeTaskExtraInfo {
     uuid: string;
     url: string;
   };
+  problemTotalScore: number;
 }
 
 function makeSubmissionPriority(
@@ -770,7 +771,8 @@ export class SubmissionService implements JudgeTaskService<SubmissionProgress, S
                     })
                   : null
               }
-            : null
+            : null,
+          problemTotalScore: (preprocessedJudgeInfo as any)?.totalScore || 100
         }
       );
     } catch (e) {

@@ -76,7 +76,8 @@ export class ProblemTypeTraditionalService
       enableUserOutputFilename: false,
       hardTimeLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemTimeLimit,
       hardMemoryLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemMemoryLimit,
-      testcaseLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemTestcases
+      testcaseLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemTestcases,
+      maxTotalScore: this.configService.config.resourceLimit.maxTotalScore
     });
 
     validateChecker(judgeInfo, testData, {
@@ -91,6 +92,7 @@ export class ProblemTypeTraditionalService
     restrictProperties(judgeInfo, [
       "timeLimit",
       "memoryLimit",
+      "totalScore",
       "fileIo",
       "runSamples",
       "subtasks",

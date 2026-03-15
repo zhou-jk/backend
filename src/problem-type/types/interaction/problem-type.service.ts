@@ -77,7 +77,8 @@ export class ProblemTypeInteractionService
       enableUserOutputFilename: false,
       hardTimeLimit,
       hardMemoryLimit,
-      testcaseLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemTestcases
+      testcaseLimit: ignoreLimits ? null : this.configService.config.resourceLimit.problemTestcases,
+      maxTotalScore: this.configService.config.resourceLimit.maxTotalScore
     });
 
     const { interactor } = judgeInfo;
@@ -125,6 +126,7 @@ export class ProblemTypeInteractionService
     restrictProperties(judgeInfo, [
       "timeLimit",
       "memoryLimit",
+      "totalScore",
       "runSamples",
       "subtasks",
       "interactor",
